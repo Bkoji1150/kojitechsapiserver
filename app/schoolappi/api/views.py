@@ -2,14 +2,67 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from schoolappi.models import Course, Student, Teacher, Review
 from schoolappi.api.serializers import (StudentListSerializer, CourseListSerializer,
                                          TeacherListSerializer, ReviewSerializer)
-
+from rest_framework import viewsets
 # from rest_framework import mixins
 from rest_framework import generics
 ## COURSE VIEWSETS
+"""
+USING ROUTER  VIEW-SET
+"""
+class StudentsInKojitechs(viewsets.ViewSet):
+    """
+    A simple ViewSet for listing or retrieving users.
+    """
+    def list(self, request):
+        queryset = Student.objects.all()
+        serializer = StudentListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = Student.objects.all()
+        student = get_object_or_404(queryset, pk=pk)
+        serializer = StudentListSerializer(student)
+        return Response(serializer.data)
+        
+    def create(self, request):
+        serializer = StudentListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
+"""
+USING ROUTER  VIEW-SET
+"""
+class CoursesInKojitechs(viewsets.ViewSet):
+    """
+    A simple ViewSet for listing or retrieving users.
+    """
+    def list(self, request):
+        queryset = Course.objects.all()
+        serializer = CourseListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = Course.objects.all()
+        course = get_object_or_404(queryset, pk=pk)
+        serializer = CourseListSerializer(course)
+        return Response(serializer.data)
+    
+    def create(self, request):
+        serializer = CourseListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)     
+    
 
 """
 USING GENERIC CLASS-BASED VIEWS 
@@ -269,10 +322,22 @@ USING MIXING
 """
 USING GENERIC CLASS-BASED VIEWS 
 """
-class ReviewList(generics.ListCreateAPIView):
-    queryset = Review.objects.all()
+class ReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Review.objects.filter(course=pk)
 
 class ReviewDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
+class CreateView(generics.CreateAPIView):
+    serializer_class = ReviewSerializer
+
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        course = Course.objects.get(pk=pk)
+        serializer.save(course=course)
+

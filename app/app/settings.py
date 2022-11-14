@@ -176,7 +176,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+PHONENUMBER_DEFAULT_REGION = 'US'
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 

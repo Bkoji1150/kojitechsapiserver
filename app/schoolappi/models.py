@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
  
 def upload_to(instance, filename):
-    return 'images/{filename}'.format(filename=filename)    
+    return 'images/api/{filename}'.format(filename=filename)    
               
 class Course(models.Model):
     course_name = models.CharField(max_length=50)
@@ -34,7 +34,7 @@ class Student(models.Model):
 class Teacher(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    course_name = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="teacher")
+    course_name = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="course")
     created_date = models.DateTimeField(auto_now_add=True) 
     email = models.EmailField(max_length=100, unique = True)
     image_url = models.ImageField(upload_to=upload_to, blank=True, null=True)
@@ -53,4 +53,3 @@ class Review(models.Model):
 
     def __str__(self):
         return str(self.rating) + "  |  " + self.review
-

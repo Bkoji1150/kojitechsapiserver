@@ -12,7 +12,7 @@ class StudentListSerializer(serializers.ModelSerializer):
         return (now() - object.created_date).days
 
 class ReviewSerializer(serializers.ModelSerializer):
-
+    review_user = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = Review
         exclude = ('course',)

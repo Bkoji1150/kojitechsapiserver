@@ -10,59 +10,73 @@ from schoolappi.api.serializers import (StudentListSerializer, CourseListSeriali
 from rest_framework import viewsets
 # from rest_framework import mixins
 from rest_framework import generics
+from rest_framework.exceptions import ValidationError
 ## COURSE VIEWSETS
 """
 USING ROUTER  VIEW-SET
 """
-class StudentsInKojitechs(viewsets.ViewSet):
-    """
-    A simple ViewSet for listing or retrieving users.
-    """
-    def list(self, request):
-        queryset = Student.objects.all()
-        serializer = StudentListSerializer(queryset, many=True)
-        return Response(serializer.data)
+# class StudentsInKojitechs(viewsets.ViewSet):
+#     """
+#     A simple ViewSet for listing or retrieving users.
+#     """
+#     def list(self, request):
+#         queryset = Student.objects.all()
+#         serializer = StudentListSerializer(queryset, many=True)
+#         return Response(serializer.data)
 
-    def retrieve(self, request, pk=None):
-        queryset = Student.objects.all()
-        student = get_object_or_404(queryset, pk=pk)
-        serializer = StudentListSerializer(student)
-        return Response(serializer.data)
+#     def retrieve(self, request, pk=None):
+#         queryset = Student.objects.all()
+#         student = get_object_or_404(queryset, pk=pk)
+#         serializer = StudentListSerializer(student)
+#         return Response(serializer.data)
         
-    def create(self, request):
-        serializer = StudentListSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def create(self, request):
+#         serializer = StudentListSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
   
+"""
+USING ROUTER  ModelVIEW-SET FOR STUDENTS
+"""  
+class StudentsInKojitechs(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentListSerializer
+
 """
 USING ROUTER  VIEW-SET
 """
-class CoursesInKojitechs(viewsets.ViewSet):
-    """
-    A simple ViewSet for listing or retrieving users.
-    """
-    def list(self, request):
-        queryset = Course.objects.all()
-        serializer = CourseListSerializer(queryset, many=True)
-        return Response(serializer.data)
+# class CoursesInKojitechs(viewsets.ViewSet):
+#     """
+#     A simple ViewSet for listing or retrieving users.
+#     """
+#     def list(self, request):
+#         queryset = Course.objects.all()
+#         serializer = CourseListSerializer(queryset, many=True)
+#         return Response(serializer.data)
 
-    def retrieve(self, request, pk=None):
-        queryset = Course.objects.all()
-        course = get_object_or_404(queryset, pk=pk)
-        serializer = CourseListSerializer(course)
-        return Response(serializer.data)
+#     def retrieve(self, request, pk=None):
+#         queryset = Course.objects.all()
+#         course = get_object_or_404(queryset, pk=pk)
+#         serializer = CourseListSerializer(course)
+#         return Response(serializer.data)
     
-    def create(self, request):
-        serializer = CourseListSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)     
-    
+#     def create(self, request):
+#         serializer = CourseListSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)     
+"""
+USING ROUTER  ModelVIEW-SET FOR STUDENTS
+"""  
+class CoursesInKojitechs(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseListSerializer
+
 
 """
 USING GENERIC CLASS-BASED VIEWS 
@@ -333,11 +347,22 @@ class ReviewDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
+
 class CreateView(generics.CreateAPIView):
     serializer_class = ReviewSerializer
-
+    
+    def get_queryset(self):
+        return Review.objects.all()
+    
     def perform_create(self, serializer):
         pk = self.kwargs.get('pk')
         course = Course.objects.get(pk=pk)
-        serializer.save(course=course)
+ 
+        review_user = self.request.user
+        review_queryset = Review.objects.filter(course=course,review_user=review_user )
+
+        if review_queryset.exists():
+            raise ValidationError("You already have a review for this course") 
+
+        serializer.save(course=course, review_user=review_user)
 

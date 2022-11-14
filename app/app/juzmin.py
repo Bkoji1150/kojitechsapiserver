@@ -9,7 +9,7 @@ JAZZMIN_SETTINGS = {
     "site_brand": "kojitechs api server ",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
-    "site_logo": "/scr/img/logo.png",
+    "site_logo": None,
     # CSS classes that are applied to the logo above
     "site_logo_classes": "img-circle",
 

@@ -4,6 +4,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from schoolappi.api.permissions import (AdminOrReadOnly, ReviewUserOrReadOnly)
 from schoolappi.models import Course, Student, Teacher, Review
 from schoolappi.api.serializers import (StudentListSerializer, CourseListSerializer,
                                          TeacherListSerializer, ReviewSerializer)
@@ -76,6 +78,7 @@ USING ROUTER  ModelVIEW-SET FOR STUDENTS
 class CoursesInKojitechs(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseListSerializer
+    permission_classes = [AdminOrReadOnly]
 
 
 """
@@ -85,9 +88,7 @@ USING GENERIC CLASS-BASED VIEWS
 class CourseList(generics.ListCreateAPIView):
     serializer_class = CourseListSerializer
     queryset = Course.objects.all()
-    # permission_classes = [permissions.IsAuthenticated]
-
-
+    
 # class CourseList(APIView):
     
 #     def get(self, request):
@@ -110,6 +111,7 @@ USING GENERIC CLASS-BASED VIEWS
 class CourseDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseListSerializer
+    permission_classes = [AdminOrReadOnly]
 
 
 
@@ -170,6 +172,7 @@ USING GENERIC CLASS-BASED VIEWS StudentList
 class StudentDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentListSerializer
+    permission_classes = [AdminOrReadOnly]
 
 # class StudenDetails(APIView):
 #     def get(self, request, pk):
@@ -202,8 +205,9 @@ USING GENERIC CLASS-BASED VIEWS
 """
 
 class TeacherList(generics.ListCreateAPIView):
-    serializer_class = TeacherListSerializer
     queryset = Teacher.objects.all()
+    serializer_class = TeacherListSerializer
+ 
     # permission_classes = [permissions.IsAuthenticated]
 
 
@@ -226,6 +230,10 @@ class TeacherList(generics.ListCreateAPIView):
 """
 USING GENERIC CLASS-BASED VIEWS StudentList
 """
+# class TeachersInKojitechs(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Teacher.objects.all()
+#     serializer_class = TeacherListSerializer
+#     permission_classes = [AdminOrReadOnly]
 
 class TeacherDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TeacherListSerializer
@@ -331,25 +339,30 @@ USING MIXING
 #         return self.update(request, *args, **kwargs)
 
 #     def delete(self, request, *args, **kwargs):
-#         return self.destroy(request, *args, **kwargs)        
+#         return self.destroy(request, *args, **kwargs) 
+     
 
 """
 USING GENERIC CLASS-BASED VIEWS 
 """
 class ReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Review.objects.filter(course=pk)
 
+
 class ReviewDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    # permission_classes = [ReviewUserOrReadOnly]
 
 
 class CreateView(generics.CreateAPIView):
     serializer_class = ReviewSerializer
+    permission_classes = [ReviewUserOrReadOnly]
     
     def get_queryset(self):
         return Review.objects.all()
@@ -364,5 +377,14 @@ class CreateView(generics.CreateAPIView):
         if review_queryset.exists():
             raise ValidationError("You already have a review for this course") 
 
+        if course.number_of_rating == 0:
+            course.avg_rating = serializer.validated_data['rating']
+        else:
+            course.avg_rating=(course.avg_rating + serializer.validated_data['rating']) / 2 
+
+        course.number_of_rating = course.number_of_rating + 1
+        course.save()
         serializer.save(course=course, review_user=review_user)
+
+
 

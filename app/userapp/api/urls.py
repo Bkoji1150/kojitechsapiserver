@@ -23,12 +23,3 @@ urlpatterns = [
     path("teachers/", TeacherList.as_view(), name="teachers-list" ),
     path("teachers/<int:pk>/", TeacherDetails.as_view(), name="teachers-details"),
 ] 
-
-# path("students/", StudentList.as_view(), name="all-students-list" ),
-# path("students/<int:pk>", StudentDetails.as_view(), name="all-students-details" ),
-
-# path("teachers", TeacherList.as_view(), name="teachers-list" ),
-# path("teachers/<int:pk>", TeacherDetails.as_view(), name="teachers-details"),
-
-# path("courses/", CourseList.as_view(), name="course-list" ),
-# path("courses/<int:pk>", CourseDetails.as_view(), name="course-details" ),    

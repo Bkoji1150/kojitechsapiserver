@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "schoolappi",
     "rest_framework",
+    "rest_framework.authtoken",
+    "userapp",
+    "paymentdetails",
 ]
 
 MIDDLEWARE = [
@@ -82,6 +85,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+    ]
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -218,5 +227,6 @@ AWS_STORAGE_BUCKET_NAME=os.environ.get('S3_STORAGE_BUCKET_NAME')
 AWS_S3_REGION_NAME=os.environ.get('AWS_S3_REGION_NAME', 'us-east-1')
 AWS_S3_CUSTOM_DOMAIN='s3.%s.amazonaws.com/%s' % (AWS_S3_REGION_NAME, AWS_STORAGE_BUCKET_NAME)
 AWS_QUERYSTRING_AUTH = False
+
 
 JAZZMIN_SETTINGS = JAZZMIN_SETTINGS

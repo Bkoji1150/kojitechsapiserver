@@ -6,10 +6,18 @@ def upload_to(instance, filename):
     return 'images/api/{filename}'.format(filename=filename)    
               
 class Course(models.Model):
-    course_name = models.CharField(max_length=50, unique=True)
+    GENDER_CHOICES = (
+        ('Terraform', 'Terraform'),
+        ('Docker', 'Docker'),
+        ('Kubernetes', 'kubernetes'),
+        ('Python', 'python'),
+    )
+    course_name = models.CharField(max_length=10, choices=GENDER_CHOICES)
     description = models.CharField(null = True, max_length=150)
     website = models.URLField(null = True, max_length=100)
     created_date = models.DateTimeField(auto_now_add=True) 
+    avg_rating = models.FloatField(default=0)
+    number_of_rating = models.IntegerField(default=0)
 
     def __str__(self):
         return self.course_name 
@@ -32,7 +40,7 @@ class Student(models.Model):
     image_url = models.ImageField(upload_to=upload_to, blank=True, null=True)
 
     def __str__(self):
-        return self.first_name +  " | " +  self.email + " | " + str(self.phone_number)
+        return self.first_name +  "    |  " +  self.email + "     |   " + str(self.phone_number)
 
     def full_address(self):
         return f'{self.Address_line_1} {self.Address_line_2}'
@@ -67,4 +75,4 @@ class Review(models.Model):
     status = models.BooleanField(default=True)
 
     def __str__(self):
-        return str(self.rating) + "  -  "   +  self.review  + " - " + str(self.review_user) 
+        return str(self.rating) + "  |  "   +  self.review  + " |  " + str(self.review_user) 

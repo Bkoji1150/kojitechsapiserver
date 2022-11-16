@@ -14,7 +14,7 @@ kojitechsapiserver
 - Finally Run The Project python manage.py runserver
 ```
 
-# IMDB API Clone With DRF
+# Kojitechs API
 
 <h3>🔗 Final Project Links (Arranged According To Usage)</h3>
 <br>
@@ -33,18 +33,18 @@ kojitechsapiserver
 </ul>
 <br>
 
-<b>3. Stream Platforms</b>
+<b>3. See all courses kojitechs offers</b>
 <ul>
-    <li>Create Element & Access List: http://127.0.0.1:8000/api/watch/stream/</li>
-    <li>Access, Update & Destroy Individual Element: http://127.0.0.1:8000/api/watch/stream/&lt;int:streamplatform_id&gt;/</li>
+    <li>Create Element & Access List: http://127.0.0.1:8000/api/courses/</li>
+    <li>Access, Update & Destroy Individual Element: http://127.0.0.1:8000/api/cources/&lt;int:&gt;/</li>
 
 </ul>
 <br>
 
-<b>4. Watch List</b>
+<b>4. Students List</b>
 <ul>
-    <li>Create & Access List: http://127.0.0.1:8000/api/watch/</li>
-    <li>Access, Update & Destroy Individual Element: http://127.0.0.1:8000/api/watch/&lt;int:movie_id&gt;/</li>
+    <li>Create & Access List: http://127.0.0.1:8000/api/students/</li>
+    <li>Access, Update & Destroy Individual Element: http://127.0.0.1:8000/api/student/&lt;int:students&gt;/</li>
 </ul>
 <br>
 

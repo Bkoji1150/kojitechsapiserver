@@ -1,9 +1,18 @@
 from rest_framework import serializers 
-from schoolappi.models import Student, Course, Teacher, Review
+from schoolappi.models import Student, Course, Teacher, Review, Payment
 from django.utils.timezone import now
 
+
+class PaymentSerializer(serializers.ModelSerializer):
+    payment_user = serializers.StringRelatedField(many=True, read_only=True)
+   
+    class Meta: 
+        model = Payment
+        fields = '__all__'
+
 class StudentListSerializer(serializers.ModelSerializer):
-    days_since_joined = serializers.SerializerMethodField() 
+    days_since_joined = serializers.SerializerMethodField()
+    payment_info = PaymentSerializer(many=True, read_only=True)
     class Meta:
         model = Student
         fields = '__all__'

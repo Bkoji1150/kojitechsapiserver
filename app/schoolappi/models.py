@@ -1,16 +1,26 @@
 from django.db import models
+import uuid
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta
+from django.urls import reverse
  
+def upload_to_student(instance, filename):
+    return 'images/api/student/photo/{filename}'.format(filename=filename)    
+
 def upload_to(instance, filename):
-    return 'images/api/{filename}'.format(filename=filename)    
-              
+    return 'images/api/teacher/photo/{filename}'.format(filename=filename)        
+
+def upload_to(instance, filename):
+    return 'images/api/payment/{filename}'.format(filename=filename)    
+
+
 class Course(models.Model):
     GENDER_CHOICES = (
         ('Terraform', 'Terraform'),
         ('Docker', 'Docker'),
         ('Kubernetes', 'kubernetes'),
-        ('Python', 'python'),
+        ('Python', 'Python'),
     )
     course_name = models.CharField(max_length=10, choices=GENDER_CHOICES)
     description = models.CharField(null = True, max_length=150)
@@ -37,7 +47,9 @@ class Student(models.Model):
     address_line_1 = models.CharField(max_length=100, null = True)
     address_line_2 = models.CharField(max_length=100, blank=True)
     created_date = models.DateTimeField(auto_now_add=True) 
-    image_url = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    image_url = models.ImageField(upload_to=upload_to_student, blank=True, null=True)
+    student_balance = models.FloatField(max_length=100, default=10000) 
+    number_of_payment = models.IntegerField(default=0)
 
     def __str__(self):
         return self.first_name +  "    |  " +  self.email + "     |   " + str(self.phone_number)
@@ -61,6 +73,7 @@ class Teacher(models.Model):
     created_date = models.DateTimeField(auto_now_add=True) 
     image_url = models.ImageField(upload_to=upload_to, blank=True, null=True)
 
+
     def __str__(self):
         return self.first_name  + "  |  " +  self.email + " | " + str(self.phone_number)
     
@@ -76,3 +89,26 @@ class Review(models.Model):
 
     def __str__(self):
         return str(self.rating) + "  |  "   +  self.review  + " |  " + str(self.review_user) 
+
+
+class Payment(models.Model):
+    id  = models.IntegerField(primary_key= True)
+    payment_user = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="payment_info")
+    payment_method = models.CharField(max_length=100, null=True, blank=True)
+    payment_id =  models.UUIDField(default=uuid.uuid4, editable=False, null=True)
+    amount_paid = models.PositiveIntegerField(validators=[MinValueValidator(200), MaxValueValidator(500)])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    receipt  = models.ImageField(upload_to=upload_to, blank=True, null=True)
+   
+    class Meta:
+        verbose_name = "Payment"
+        verbose_name_plural = "Payments"
+
+    
+    def __iter__(self):
+         return [field.value_to_string(self) for field in Student._meta.fields]    
+
+    def __str__(self):
+        return  str(self.amount_paid)  +  "  |  " + str(self.updated_at) + "  | " + str(self.payment_method)
+

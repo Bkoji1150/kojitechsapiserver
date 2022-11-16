@@ -5,10 +5,10 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
-from schoolappi.api.permissions import (AdminOrReadOnly, ReviewUserOrReadOnly)
-from schoolappi.models import Course, Student, Teacher, Review
+from schoolappi.api.permissions import (IsAdminOrReadOnly, ReviewUserOrReadOnly)
+from schoolappi.models import (Course, Student, Teacher, Review, Payment)
 from schoolappi.api.serializers import (StudentListSerializer, CourseListSerializer,
-                                         TeacherListSerializer, ReviewSerializer)
+                                         TeacherListSerializer, ReviewSerializer, PaymentSerializer)
 from rest_framework import viewsets
 # from rest_framework import mixins
 from rest_framework import generics
@@ -16,8 +16,9 @@ from rest_framework.exceptions import ValidationError
 ## COURSE VIEWSETS
 """
 USING ROUTER  VIEW-SET
-"""
+# """
 # class StudentsInKojitechs(viewsets.ViewSet):
+#     permission_classes = [IsAdminOrReadOnly]
 #     """
 #     A simple ViewSet for listing or retrieving users.
 #     """
@@ -42,15 +43,14 @@ USING ROUTER  VIEW-SET
   
 """
 USING ROUTER  ModelVIEW-SET FOR STUDENTS
-"""  
-class StudentsInKojitechs(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
-    serializer_class = StudentListSerializer
+# """  
+
 
 """
 USING ROUTER  VIEW-SET
-"""
+# """
 # class CoursesInKojitechs(viewsets.ViewSet):
+#     permission_classes = [IsAdminOrReadOnly]
 #     """
 #     A simple ViewSet for listing or retrieving users.
 #     """
@@ -72,18 +72,18 @@ USING ROUTER  VIEW-SET
 #             return Response(serializer.data, status=status.HTTP_200_OK)
 #         else:
 #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)     
-"""
-USING ROUTER  ModelVIEW-SET FOR STUDENTS
-"""  
+# """
+# USING ROUTER  ModelVIEW-SET FOR STUDENTS
+# """  
 class CoursesInKojitechs(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseListSerializer
-    permission_classes = [AdminOrReadOnly]
+    # permission_classes = [IsAdminOrReadOnly]
 
 
-"""
-USING GENERIC CLASS-BASED VIEWS 
-"""
+# """
+# USING GENERIC CLASS-BASED VIEWS 
+# """
 
 class CourseList(generics.ListCreateAPIView):
     serializer_class = CourseListSerializer
@@ -108,10 +108,10 @@ class CourseList(generics.ListCreateAPIView):
 """
 USING GENERIC CLASS-BASED VIEWS 
 """
-class CourseDetails(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Course.objects.all()
-    serializer_class = CourseListSerializer
-    permission_classes = [AdminOrReadOnly]
+# class CourseDetails(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Course.objects.all()
+#     serializer_class = CourseListSerializer
+#     permission_classes = [IsAdminOrReadOnly]
 
 
 
@@ -140,15 +140,17 @@ class CourseDetails(generics.RetrieveUpdateDestroyAPIView):
 #         course = Course.objects.get(pk=pk)
 #         course.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
- 
+
+class StudentsInKojitechs(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentListSerializer 
+    # permission_classes = [IsAdminOrReadOnly]
 """
 USING GENERIC CLASS-BASED VIEWS StudentList
 """
 class StudentList(generics.ListCreateAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentListSerializer
-
-    # permission_classes = [permissions.IsAuthenticated]
 
 # class StudentList(APIView):
 
@@ -169,11 +171,16 @@ class StudentList(generics.ListCreateAPIView):
 USING GENERIC CLASS-BASED VIEWS StudentList
 """
 
-class StudentDetails(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Student.objects.all()
-    serializer_class = StudentListSerializer
-    permission_classes = [AdminOrReadOnly]
+# class StudentDetails(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Student.objects.all()
+#     serializer_class = StudentListSerializer
+#     permission_classes = [IsAdminOrReadOnly]
 
+
+# class PaymentsDetails(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Student.objects.all()
+#     serializer_class = StudentListSerializer
+#     permission_classes = [IsAdminOrReadOnly]
 # class StudenDetails(APIView):
 #     def get(self, request, pk):
 #         try:
@@ -235,35 +242,37 @@ USING GENERIC CLASS-BASED VIEWS StudentList
 #     serializer_class = TeacherListSerializer
 #     permission_classes = [AdminOrReadOnly]
 
-class TeacherDetails(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = TeacherListSerializer
-    queryset = Teacher.objects.all()
+# class TeacherDetails(generics.RetrieveUpdateDestroyAPIView):
+#     parser_classes = [IsAdminOrReadOnly]
+#     serializer_class = TeacherListSerializer
+#     queryset = Teacher.objects.all()
 
-# class TeachersDetails(APIView):
-#     def get(self, request, pk):
-#         try:
-#             teacher = Teacher.objects.get(pk=pk)
-#             serializer = TeacherListSerializer(teacher)
-#             return Response(serializer.data)    
-#         except teacher.DoesNotExist:
-#             error = {
-#                 'error': 'teacher does\'t exist'
-#             }
-#             return Response(error, status=status.HTTP_404_NOT_FOUND)  
+class TeacherDetails(APIView):
+    parser_classes = [IsAdminOrReadOnly]
+    def get(self, request, pk):
+        try:
+            teacher = Teacher.objects.get(pk=pk)
+            serializer = TeacherListSerializer(teacher)
+            return Response(serializer.data)    
+        except teacher.DoesNotExist:
+            error = {
+                'error': 'teacher does\'t exist'
+            }
+            return Response(error, status=status.HTTP_404_NOT_FOUND)  
 
-#     def put(self, request, pk):
-#         teacher = Teacher.objects.get(pk=pk)
-#         serializer = TeacherListSerializer(teacher, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)   
+    def put(self, request, pk):
+        teacher = Teacher.objects.get(pk=pk)
+        serializer = TeacherListSerializer(teacher, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)   
 
-#     def delete(self, request, pk):
-#         teacher = Teacher.objects.get(pk=pk)
-#         teacher.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
+    def delete(self, request, pk):
+        teacher = Teacher.objects.get(pk=pk)
+        teacher.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
@@ -347,20 +356,19 @@ USING GENERIC CLASS-BASED VIEWS
 """
 class ReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
-
+    
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Review.objects.filter(course=pk)
 
 
-class ReviewDetails(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    # permission_classes = [ReviewUserOrReadOnly]
+# class ReviewDetails(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
+#     permission_classes = [ReviewUserOrReadOnly]
 
 
-class CreateView(generics.CreateAPIView):
+class CreateReview(generics.CreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [ReviewUserOrReadOnly]
     
@@ -385,6 +393,43 @@ class CreateView(generics.CreateAPIView):
         course.number_of_rating = course.number_of_rating + 1
         course.save()
         serializer.save(course=course, review_user=review_user)
+
+class PaymentList(generics.ListCreateAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+
+class PaymentsDetails(APIView):
+   
+    def get(self, request,  *args, **kwargs):
+        try:
+            pk = self.kwargs.get('pk')
+            payment = get_object_or_404(Payment.objects.all(), pk=pk)
+            # serializer = PaymentSerializer(instance=save_allowance,data=data,partial=True)
+
+            payment = Payment.objects.get(pk=pk)
+            serializer = PaymentSerializer(payment)
+            return Response(serializer.data)    
+        except payment.DoesNotExist:
+            error = {
+                'error': 'teacher does\'t exist'
+            }
+            return Response(error, status=status.HTTP_404_NOT_FOUND)  
+
+    # def put(self, request, pk):
+    #     payment = Payment.objects.get(pk=pk)
+    #     serializer = PaymentSerializer(payment, data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
+    #     else:
+    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)   
+
+    # def delete(self, request, pk):
+    #     payment = Payment.objects.get(pk=pk)
+    #     payment.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
 
 
 

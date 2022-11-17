@@ -2,7 +2,7 @@ from django.urls import path, include
 # from .views import movie_list, movie_details
 from .views import (ReviewList, CreateReview, StudentList, PaymentList, StudentDetails,
                     CoursesInKojitechs,
-                   TeacherList,TeacherDetails, Makepayment ,TotalPaymentMade, StudentName ,UserReview)
+                   TeacherList,TeacherDetails, Makepayment , StudentName ,UserReview)
 
 from rest_framework.routers import DefaultRouter
 

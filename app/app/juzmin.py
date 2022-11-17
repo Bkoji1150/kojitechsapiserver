@@ -6,15 +6,15 @@ JAZZMIN_SETTINGS = {
     "site_header": "kojitechs api server",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "kojitechs api server ",
+    "site_brand": "kojitechs api server",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
-    "site_logo": None,
+    "site_logo": "/img/sms.png",
     # CSS classes that are applied to the logo above
     "site_logo_classes": "img-circle",
 
     # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
-    "site_icon": None,
+    "site_logo": "/img/sms.png",
 
     # Welcome text on the login screen
     "welcome_sign": "Welcome to the kojitechs api server",
@@ -26,7 +26,7 @@ JAZZMIN_SETTINGS = {
     "search_model": "auth.User",
 
     # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
-    "user_avatar": None,
+    "user_avatar": "img/favicon.ico",
 
     ############
     # Top Menu #
@@ -36,7 +36,7 @@ JAZZMIN_SETTINGS = {
     "topmenu_links": [
 
         # Url that gets reversed (Permissions can be added)
-        {"name": "Home",  "url": "dashboard:index", "permissions": ["auth.view_user"]},
+        {"name": "Home",  "url": "kojitechsecuredlogin:index", "permissions": ["auth.view_user"]},
 
         # external url that opens in a new window (Permissions can be added)
         {"name": "Support", "url": "https://gitlab.com/kojibello/kojitechs-api-server/-/issues/1", "new_window": True},

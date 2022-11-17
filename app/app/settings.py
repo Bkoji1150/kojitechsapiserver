@@ -37,7 +37,6 @@ TEMPLATE_DEBUG = DEBUG
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -52,8 +51,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "userapp",
-    "paymentdetails",
-    "django_filters"
+    "django_filters",
+    "admin_honeypot",
 ]
 
 MIDDLEWARE = [
@@ -91,10 +90,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
     ],
-    # 'DEFAULT_THROTTLE_CLASSES': [
-    #     'rest_framework.throttling.AnonRateThrottle',
-    #     'rest_framework.throttling.UserRateThrottle'
-    # ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '1/day',
         'user': '10/day',

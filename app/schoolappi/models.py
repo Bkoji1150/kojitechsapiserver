@@ -32,7 +32,9 @@ class Student(models.Model):
         ('O', 'Other'),
     )
     first_name = NameField(max_length=100)
+    middle_name = NameField(max_length=100, null =True,  blank= True)
     last_name =  NameField(max_length=100)
+    nick_name =  NameField(max_length=100, null =True,  blank= True)
     phone_number = models.CharField(max_length=50, unique = True)
     course_name = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="student")
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
@@ -42,8 +44,7 @@ class Student(models.Model):
     address_line_2 = models.CharField(max_length=100, blank=True)
     created_date = models.DateTimeField(auto_now_add=True) 
     image_url = models.ImageField(upload_to=upload_to, blank=True, null=True)
-    student_balance = models.FloatField(default=1000.0)
-    status = models.CharField(default='not completed', max_length=20)
+    current_balance = models.FloatField(default=0)
     total_amount_paid = models.IntegerField(default=0)
     number_of_payment = models.IntegerField(default=0)
 
@@ -99,5 +100,5 @@ class Payment(models.Model):
     receipt  = models.ImageField(upload_to=upload_to, null=True, blank=True)
 
     def __str__(self):
-        return str(self.amount_paid) + " | " + str(self.payment_user) + " | " + str(self.course_name)
+        return str(self.amount_paid) + " | " + str(self.payment_user) 
 

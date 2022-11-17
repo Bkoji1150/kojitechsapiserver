@@ -31,7 +31,7 @@ class UserReview(generics.ListAPIView):
 class CreateReview(generics.CreateAPIView):
     serializer_class = ReviewSerializer
     pagination_classes = [CoursePagination]
-    
+ 
     def get_queryset(self):
         return Review.objects.all()
     
@@ -90,6 +90,7 @@ class CoursesInKojitechs(viewsets.ModelViewSet):
 
 class CourseList(generics.ListCreateAPIView):
     serializer_class = CourseListSerializer
+    permission_classes = [IsAdminOrReadOnly]
     queryset = Course.objects.all()
     pagination_classes = [CourseListLOPagination]
 
@@ -179,6 +180,21 @@ class PaymentList(generics.ListCreateAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
 
+# class TotalPaymentMade(generics.ListAPIView):
+#     serializer_class = PaymentSerializer
+#     pagination_classes = [CoursePagination]
+#     permission_classes = [IsAdminOrReadOnly]
+
+#     def get_queryset(self):
+#         count = 0
+#         total_payment = Payment.objects.all()
+#         amount_paid = self.kwargs['amount_paid']
+#         for each_payment in total_payment:
+#             each_payment.amount_paid = amount_paid
+#             each_payment = count + each_payment.amount_paid
+#             each_payment.save()
+#         return each_payment
+
 class Makepayment(generics.CreateAPIView):
     serializer_class = PaymentSerializer
     pagination_classes = [CoursePagination]
@@ -189,14 +205,16 @@ class Makepayment(generics.CreateAPIView):
     def perform_create(self, serializer):
         pk = self.kwargs.get('pk')
         student = Student.objects.get(pk=pk)
-
-        if student.number_of_payment != 0:
-            student.total_amount_paid = student.total_amount_paid - serializer.validated_data['amount_paid'] 
-            student.student_balance =  float(1000) - student.total_amount_paid
-        if student.number_of_payment == float(1000):
-            student.status = "completed"
-            raise ValidationError("congratulation you have made a complete payment") 
+     
+        if student.total_amount_paid >= float(1000):
+            message = {
+                'message': 'You have already made a payment'
+            }
+            raise ValidationError(message) 
+      
         student.number_of_payment =  student.number_of_payment  + 1
+        student.total_amount_paid =  student.total_amount_paid + serializer.validated_data['amount_paid']
+        student.current_balance = float(1000) - student.total_amount_paid 
         student.save()    
         if serializer.is_valid():
             serializer.save(payment_user=student) 

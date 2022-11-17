@@ -14,7 +14,8 @@ class StudentListSerializer(serializers.ModelSerializer):
     confirm_user = PaymentSerializer(many=True, read_only=True)
     class Meta:
         model = Student
-        exclude = ('total_amount_paid','number_of_payment','status', 'student_balance' )
+        fields = '__all__'
+        # exclude = ('total_amount_paid','number_of_payment','status', 'student_balance' )
 
     def get_days_since_joined(self, object):
         return (now() - object.created_date).days

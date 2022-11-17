@@ -2,7 +2,7 @@ from django.urls import path, include
 # from .views import movie_list, movie_details
 from .views import (ReviewList, CreateReview, StudentList, PaymentList, StudentDetails,
                     CoursesInKojitechs,
-                   TeacherList,TeacherDetails, Makepayment , StudentName ,UserReview)
+                   TeacherList,TeacherDetails, Makepayment ,TotalPaymentMade, StudentName ,UserReview)
 
 from rest_framework.routers import DefaultRouter
 
@@ -16,6 +16,7 @@ urlpatterns = [
 
     path('students/<int:pk>/amountpaid/', PaymentList.as_view(), name='paymentdetails'),
     path('students/<int:pk>/makepayment/', Makepayment.as_view(), name='makepayments'),
+    # path('totalpayments/', TotalPaymentMade.as_view(), name='totalpayments'),
 
     path('', include(router.urls)),
     path("courses/<int:pk>/create-review/", CreateReview.as_view(), name="create-review" ),

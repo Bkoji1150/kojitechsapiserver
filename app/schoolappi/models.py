@@ -7,7 +7,6 @@ def upload_to(instance, filename):
     return 'images/api/{filename}'.format(filename=filename)    
               
 class Course(models.Model):
-
     course_name = models.CharField(max_length=100, unique= True)
     description = models.CharField(null =True,  blank= True, max_length=150)
     website = models.URLField(null=True, blank= True, max_length=100)
@@ -52,7 +51,7 @@ class Student(models.Model):
         return [field.value_to_string(self) for field in Course._meta.fields]    
 
     def __str__(self):
-        return self.first_name +  "    |  " +  self.email + "     |   " + str(self.phone_number)
+        return  self.email 
 
     def full_address(self):
         return f'{self.Address_line_1} {self.Address_line_2}'

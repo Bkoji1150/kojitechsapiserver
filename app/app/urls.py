@@ -20,10 +20,9 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path("dashboard/", admin.site.urls),
-    # path("api-auth/", include("rest_framework.urls")),
-    path("", include("schoolappi.api.urls")),
+    path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    path("kojitechsecuredlogin/", admin.site.urls),
+    path('', include("schoolappi.api.urls")),
     path("account/", include("userapp.api.urls")),
-
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

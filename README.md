@@ -1,11 +1,9 @@
 # kojitechsapiserver
-kojitechsapiserver
+This Project create Fast maintainable API's for kojitechs
 
 ## Test Locally 
 
 ```sh
-- Clone This Project git clone git@gitlab.com:kojibello/kojitechs-kart.git
-- Go To Project Directory cd 
 - Create a Virtual Environment python -m venv venv
 - Activate Virtual Environment source venv/bin/activate
 - Install Requirements Package pip install -r requirements.txt
